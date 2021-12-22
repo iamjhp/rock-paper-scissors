@@ -1,3 +1,7 @@
+let playerScore = 0
+let computerScore = 0
+let gamePlayed = 0
+
 function computerPlay() {
     let choises = ['rock', 'paper', 'scissors']
     let rand = Math.floor(Math.random() * 3)
@@ -8,7 +12,7 @@ function computerPlay() {
 function playRound(playerSelection, computerSelection) {
     playerSelection = playerSelection.toLowerCase()
     if (playerSelection == computerSelection) {
-        console.log("Tie Game!")
+        displayResult("Tie Game!")
         return "tie"
     } else {
         if (
@@ -16,37 +20,55 @@ function playRound(playerSelection, computerSelection) {
             || (playerSelection == 'paper' && computerSelection == 'rock') 
             || (playerSelection == 'scissors' && computerSelection == 'rock')
         ) {
-            console.log(`You won! ${playerSelection} beats ${computerSelection}`)
+            displayResult(`You won! ${playerSelection} beats ${computerSelection}`)
             return "player"
         } else {
-            console.log(`You lost! ${computerSelection} beats ${playerSelection}`)
+            displayResult(`You lost! ${computerSelection} beats ${playerSelection}`)
             return "computer"
         }
     }
 }
 
-function game() {
-    let playerScore = 0
-    let computerScore = 0
+function displayResult(str) {
+    const display = document.querySelector('.display')
+    display.textContent = str
+}
 
-    for (let i = 0; i < 5; i++) {
-        let playerSelection = prompt("choose rock, paper or scissors: ")
-        let computerSelection = computerPlay()
-        let resultRound = playRound(playerSelection, computerSelection)
-        if (resultRound == "player") {
-            playerScore++
-        } 
-        if (resultRound == "computer") {
-            computerScore++
-        }
+function displayScoreAndAlertWinner(roundResult) {
+    const display = document.querySelector('.score')
+
+    gamePlayed++
+
+    if (roundResult == "player") {
+        playerScore++
+    } 
+    if (roundResult == "computer") {
+        computerScore++
     }
+    display.textContent = "Round: " + gamePlayed + " You: " + playerScore + " Computer: " + computerScore
 
-    if (playerScore > computerScore) {
-        console.log("Player won with " + playerScore + ":" + computerScore)
-    } else {
-        console.log("Computer won with " + computerScore + ":" + playerScore)
+    if (playerScore == 5 || computerScore == 5) {
+        setTimeout(alertWinner, 1)
+        newGame()
     }
 }
 
+function alertWinner() {
+    let winner = playerScore == 5 ? "Player" : "Computer"
+    alert("winner: " + winner)
+}
 
-game()
+function newGame() {
+    playerScore = 0
+    computerScore = 0
+    gamePlayed = 0
+}
+
+const buttons = document.querySelectorAll('button')
+
+buttons.forEach((button) => {
+    button.addEventListener('click', () => {
+        let roundResult = playRound(button.id, computerPlay())
+        displayScoreAndAlertWinner(roundResult)
+    })
+})
